@@ -1,17 +1,17 @@
 package lab_1;
 
-
+//123
 import java.util.Scanner;
-
+/*Athour  Date*/
 public class Calculator {
 	//subclasses and structures
 
 	
 	//Constants & Control panel
-	final static int	maxItemCount	=	1000;
-	final static int	maxVarCount		=	30;
-	final static double	minDouble		=	0.0000001;
-	final static Boolean isDebugging	=	false;
+	final static int	MAXITEMCOUNT	=	1000;
+	final static int	MAXVARCOUNT		=	30;
+	final static double	MINDOUBLE		=	0.0000001;
+	final static Boolean ISDEBUGGING	=	false;
 	
 	static Boolean haveExpression	=	false;
 	static int itemCount = 0;
@@ -33,7 +33,7 @@ public class Calculator {
 	
 	public static Boolean isZero(double d)
 	{
-		if (Math.abs(d)<minDouble)
+		if (Math.abs(d)<MINDOUBLE)
 			return true;
 		else
 			return false;
@@ -49,7 +49,7 @@ public class Calculator {
 					for  (int j=i+1;j<itemCount;j++)
 					{
 						Boolean sameFlag=true;
-						for (int k=0;k<maxVarCount;k++)			//check if they are similar items
+						for (int k=0;k<MAXVARCOUNT;k++)			//check if they are similar items
 						{
 							if (exp[i][k]!=exp[j][k])
 							{
@@ -61,7 +61,7 @@ public class Calculator {
 						{
 							co[i]+=co[j];
 							co[j]=0;
-							for (int k=0;k<maxVarCount;k++)
+							for (int k=0;k<MAXVARCOUNT;k++)
 								{
 								exp[j][k]=0;
 								}
@@ -85,7 +85,7 @@ public class Calculator {
 						}
 						System.out.print(co[i]);
 						
-						for (int j=0;j<maxVarCount;j++)
+						for (int j=0;j<MAXVARCOUNT;j++)
 							{
 								if (exp[i][j]!=0)
 								{
@@ -123,7 +123,7 @@ public class Calculator {
 		
 		if (illegalExpression) 
 			return false;
-		if (isDebugging) 
+		if (ISDEBUGGING) 
 			System.out.println("DBG:possible expression");
 			return true;
 	}
@@ -136,7 +136,7 @@ public class Calculator {
 		if (!s.startsWith("!simplify")) 
 				return false;
 		
-		if (isDebugging) System.out.println("DBG:possible simplify command");
+		if (ISDEBUGGING) System.out.println("DBG:possible simplify command");
 				return true;
 	}
 	
@@ -145,26 +145,27 @@ public class Calculator {
 		if (s.length()!=6) return false;
 		if (!s.startsWith("!d/d ")) return false;
 		if ("abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(5))==-1) return false;
-		if (isDebugging) System.out.println("DBG:possible derivation command");
+		if (ISDEBUGGING) System.out.println("DBG:possible derivation command");
 		return true;
 	}
 	
 	//Initialization
-	public static void initialize(String s)
+	public static void initialize(String ss)
 	{
-		s = s.replace(" ", "");			//delete all spaces
-		s = s.replace("-","+@");		//use @ to represent minus
-		s = s.replace("*","");			//remove all *
+		String s;
+		s = ss.replace(" ", "");			//delete all spaces
+		s = ss.replace("-","+@");		//use @ to represent minus
+		s = ss.replace("*","");			//remove all *
 		if (s.charAt(0)=='+')
 			s=s.substring(1);
 		
-		if (isDebugging) 
+		if (ISDEBUGGING) 
 			System.out.println("DBG:replaced useless chars:"+s);
 		
 		String items[] = s.split("\\+");
 		itemCount = items.length;
 		
-		if (isDebugging)
+		if (ISDEBUGGING)
 		{
 			System.out.println("DBG:splitted tokens:");
 			for (int i=0;i<itemCount;i++)
@@ -172,7 +173,7 @@ public class Calculator {
 		}
 		
 		//data structure initializing
-		expressionArray 	= new int[itemCount][maxVarCount];
+		expressionArray 	= new int[itemCount][MAXVARCOUNT];
 		coefficientArray	= new double[itemCount];
 		
 		
@@ -180,7 +181,7 @@ public class Calculator {
 		//parse each token into the array
 		for (int i=0;i<itemCount;i++)
 		{
-			if (isDebugging) System.out.println("DBG:Processing token "+i);
+			if (ISDEBUGGING) System.out.println("DBG:Processing token "+i);
 			
 			coefficientArray[i]=1;
 			StringBuffer token = new StringBuffer(items[i]);
@@ -200,7 +201,7 @@ public class Calculator {
 					};
 						if (cache.charAt(0) == '@')
 						cache.setCharAt(0, '-');
-						if (isDebugging) System.out.println(" DBG:sub-token:"+cache );
+						if (ISDEBUGGING) System.out.println(" DBG:sub-token:"+cache );
 					coefficientArray[i] *= Double.parseDouble(cache.toString());
 						
 					
@@ -213,7 +214,7 @@ public class Calculator {
 						if (token.charAt(1)=='^')
 						{
 							int varTemp = charIndex(token.charAt(0));
-							if (isDebugging) System.out.print(" DBG:sub-token:"+token.substring(0, 2) );
+							if (ISDEBUGGING) System.out.print(" DBG:sub-token:"+token.substring(0, 2) );
 							token.deleteCharAt(0);
 							token.deleteCharAt(0);
 							
@@ -239,14 +240,14 @@ public class Calculator {
 								if (token.length()==0) 
 									break;
 							};
-							if (isDebugging) 
+							if (ISDEBUGGING) 
 								System.out.println(cache );
 							expressionArray[i][varTemp]+= Integer.parseInt(cache.toString());
 						} 
 							else
 						{
 							expressionArray[i][charIndex(token.charAt(0))]++;
-							if (isDebugging) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
+							if (ISDEBUGGING) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
 							token.deleteCharAt(0);
 						}
 						
@@ -255,7 +256,7 @@ public class Calculator {
 						//there's only one variable in the expression
 					{
 						expressionArray[i][charIndex(token.charAt(0))]++;
-						if (isDebugging) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
+						if (ISDEBUGGING) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
 						token.deleteCharAt(0);
 					}
 				} 
