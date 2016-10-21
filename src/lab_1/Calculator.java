@@ -1,6 +1,6 @@
 package lab_1;
 
-//88888888
+
 import java.util.Scanner;
 
 public class Calculator {
