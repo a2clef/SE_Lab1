@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Calculator {
 	//subclasses and structures
 
-	
+
 	//Constants & Control panel
 	final static int	MAXITEMCOUNT	=	1000;
 	final static int	MAXVARCOUNT		=	30;
