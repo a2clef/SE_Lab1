@@ -97,6 +97,68 @@ public class Calculator {
 				System.out.println();	
 	}
 	
+	public static String parseResult(int[][] exp, double[] co)
+	{
+		//combine same items, if possible
+		String result = "";
+			for (int i=0;i<itemCount-1;i++)
+				{
+					if (isZero(co[i]))			//skip the empty term
+						continue;
+					for  (int j=i+1;j<itemCount;j++)
+					{
+						Boolean sameFlag=true;
+						for (int k=0;k<maxVarCount;k++)			//check if they are similar items
+							if (exp[i][k]!=exp[j][k])
+							{
+								sameFlag=false;
+								break;
+							};
+						if (sameFlag)							//combine the items and clean the latter one
+						{
+							co[i]+=co[j];
+							co[j]=0;
+							for (int k=0;k<maxVarCount;k++)
+								exp[j][k]=0;
+						}
+					}
+				};
+				
+				
+				//do something, output the expression to see the result
+				
+				Boolean isFirstFlag=true;
+				for (int i=0;i<itemCount;i++)
+					if (!isZero(co[i]))
+					{
+						if(!isFirstFlag)
+						{
+							if (co[i]>0){
+								result+="+";
+							}
+						} else isFirstFlag=false;
+						//if (coefficientArray[i]<0)
+						//	System.out.print("-");
+						result+=co[i];
+						
+						
+						for (int j=0;j<maxVarCount;j++)
+							if (exp[i][j]!=0)
+							{
+								if (exp[i][j] == 1)	
+								{
+									result+=indexChar(j);
+								} else 
+								{
+									result+=indexChar(j);
+									result+="^";
+									result+=exp[i][j];
+								}
+							}
+					}
+				return result;
+	}	
+
 	//Syntax Check
 	public static Boolean isLegitExpression(String s)
 	{
@@ -251,7 +313,7 @@ public class Calculator {
 		
 	}
 	//commands
-	public static void simplify(String s)
+	public static String simplify(String s)
 	{
 		//copy the expression for simplification
 		int[][]		tempExArray = new int[expressionArray.length][];
@@ -268,7 +330,7 @@ public class Calculator {
 		if (s.length()==0)
 		{
 			outputExpression(tempExArray,tempCoArray);
-			return;
+			return parseResult(tempExArray,tempCoArray);
 		}
 		
 		String[]	detVariables	= s.split(" "); 
@@ -285,7 +347,7 @@ public class Calculator {
 			{
 				parseError=true;
 				System.out.println("Illegal Variable for assignment");
-				return;
+				return "illegal variable";
 			};
 			
 			try
@@ -295,7 +357,7 @@ public class Calculator {
 			{
 				System.out.println("Illegal assignment: Not a number.");
 				parseError=true;
-				return;
+				return "illegal assignment";
 			};
 			
 			if (parseError) break;
@@ -304,15 +366,15 @@ public class Calculator {
 		if(parseError)
 		{
 			System.out.println("Illegal Simplification Command.Please check.");
-			return;
+			return "illegal simplification string";
 		}
 		
 		for (int i=0;i<detVariables.length-1;i++)
 			for (int j=i+1;j<detVariables.length;j++)
-				if (assignments[i][0]==assignments[j][0])
+				if (assignments[i][0].equals(assignments[j][0]))
 				{
 					System.out.println("Duplicated Assignment, please check.");
-					return;
+					return "duplicated assignment";
 				};
 		
 		for (int i=0;i<detVariables.length;i++)
@@ -329,7 +391,7 @@ public class Calculator {
 			if (!existVariable)
 			{
 				System.out.println("Assignment to non exist variable, please check.");
-				return;
+				return "variable does not exist";
 			}
 		};
 				
@@ -337,9 +399,9 @@ public class Calculator {
 		//output the result
 		
 		outputExpression(tempExArray,tempCoArray);
+		//System.out.println(parseResult(tempExArray,tempCoArray));
 		
-		
-		return;
+		return parseResult(tempExArray,tempCoArray);
 	}
 	
 	public static void derivate(char var)
