@@ -404,7 +404,7 @@ public class Calculator {
 		return parseResult(tempExArray,tempCoArray);
 	}
 	
-	public static void derivate(char var)
+	public static String derivate(char var)
 	{
 		//copy the expression for simplification
 		int[][]		tempExArray = new int[expressionArray.length][];
@@ -425,15 +425,14 @@ public class Calculator {
 					tempExArray[i][charIndex(var)]--;
 					varExist=true;
 				};
-				
 		if(!varExist)
 		{
 			System.out.println("Variable does not exist, please check.");
-			return;
+			return "variable does not exist";
 		}
 		//output the expression processed
 		outputExpression(tempExArray,tempCoArray);
-		return;
+		return parseResult(tempExArray,tempCoArray);
 	}
 	
 	
