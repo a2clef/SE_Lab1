@@ -1,6 +1,5 @@
 package lab_1;
 
-//123
 import java.util.Scanner;
 
 public class Calculator {
@@ -8,10 +7,10 @@ public class Calculator {
 
 	
 	//Constants & Control panel
-	final static int	MAXITEMCOUNT	=	1000;
-	final static int	MAXVARCOUNT		=	30;
-	final static double	MINDOUBLE		=	0.0000001;
-	final static Boolean ISDEBUGGING	=	false;
+	final static int	maxItemCount	=	1000;
+	final static int	maxVarCount		=	30;
+	final static double	minDouble		=	0.0000001;
+	final static Boolean isDebugging	=	false;
 	
 	static Boolean haveExpression	=	false;
 	static int itemCount = 0;
@@ -33,7 +32,7 @@ public class Calculator {
 	
 	public static Boolean isZero(double d)
 	{
-		if (Math.abs(d)<MINDOUBLE)
+		if (Math.abs(d)<minDouble)
 			return true;
 		else
 			return false;
@@ -49,46 +48,41 @@ public class Calculator {
 					for  (int j=i+1;j<itemCount;j++)
 					{
 						Boolean sameFlag=true;
-						for (int k=0;k<MAXVARCOUNT;k++)			//check if they are similar items
-						{
+						for (int k=0;k<maxVarCount;k++)			//check if they are similar items
 							if (exp[i][k]!=exp[j][k])
 							{
 								sameFlag=false;
 								break;
 							};
-						}
 						if (sameFlag)							//combine the items and clean the latter one
 						{
 							co[i]+=co[j];
 							co[j]=0;
-							for (int k=0;k<MAXVARCOUNT;k++)
-								{
+							for (int k=0;k<maxVarCount;k++)
 								exp[j][k]=0;
-								}
 						}
 					}
 				};
+				
+				
 				//do something, output the expression to see the result
+				
 				Boolean isFirstFlag=true;
 				for (int i=0;i<itemCount;i++)
+					if (!isZero(co[i]))
 					{
-						if (!isZero(co[i]))
-						{
 						if(!isFirstFlag)
 						{
 							if (co[i]>0)
 								System.out.print("+");
-						} 
-						else 
-						{
-							isFirstFlag=false;
-						}
+						} else isFirstFlag=false;
+						//if (coefficientArray[i]<0)
+						//	System.out.print("-");
 						System.out.print(co[i]);
 						
-						for (int j=0;j<MAXVARCOUNT;j++)
+						for (int j=0;j<maxVarCount;j++)
+							if (exp[i][j]!=0)
 							{
-								if (exp[i][j]!=0)
-								{
 								if (exp[i][j] == 1)	
 								{
 									System.out.print(indexChar(j));
@@ -98,12 +92,10 @@ public class Calculator {
 									System.out.print("^");
 									System.out.print(exp[i][j]);
 								}
-								}
 							}
-						}
-						System.out.println();	
 					}
-				}
+				System.out.println();	
+	}
 	
 	//Syntax Check
 	public static Boolean isLegitExpression(String s)
@@ -111,21 +103,17 @@ public class Calculator {
 		Boolean illegalExpression=false;
 		//add rules for illegal expression
 		for (int i=0;i<s.length();i++)		//if contains illegal character
+			if ("0123456789-+*^. abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(i)) == -1) 
 			{
-				if ("0123456789-+*^. abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(i)) == -1) 
-				{
 				illegalExpression=true;
 				break;
-				}
-			}
+			};
 		
 		
 		
-		if (illegalExpression) 
-			return false;
-		if (ISDEBUGGING) 
-			System.out.println("DBG:possible expression");
-			return true;
+		if (illegalExpression) return false;
+		if (isDebugging) System.out.println("DBG:possible expression");
+		return true;
 	}
 	
 	public static Boolean isLegitSimplifyCommand(String s)
@@ -133,11 +121,10 @@ public class Calculator {
 		for (int i=0;i<s.length();i++)		//if contains illegal character
 			if ("!0123456789-=. abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(i)) == -1) 
 				return false;
-		if (!s.startsWith("!simplify")) 
-				return false;
+		if (!s.startsWith("!simplify")) return false;
 		
-		if (ISDEBUGGING) System.out.println("DBG:possible simplify command");
-				return true;
+		if (isDebugging) System.out.println("DBG:possible simplify command");
+		return true;
 	}
 	
 	public static Boolean isLegitDerivationCommand(String s)
@@ -145,27 +132,25 @@ public class Calculator {
 		if (s.length()!=6) return false;
 		if (!s.startsWith("!d/d ")) return false;
 		if ("abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(5))==-1) return false;
-		if (ISDEBUGGING) System.out.println("DBG:possible derivation command");
+		if (isDebugging) System.out.println("DBG:possible derivation command");
 		return true;
 	}
 	
 	//Initialization
-	public static void initialize(String ss)
+	public static void initialize(String s)
 	{
-		String s;
-		s = ss.replace(" ", "");			//delete all spaces
-		s = ss.replace("-","+@");		//use @ to represent minus
-		s = ss.replace("*","");			//remove all *
+		s = s.replace(" ", "");			//delete all spaces
+		s = s.replace("-","+@");		//use @ to represent minus
+		s = s.replace("*","");			//remove all *
 		if (s.charAt(0)=='+')
 			s=s.substring(1);
 		
-		if (ISDEBUGGING) 
-			System.out.println("DBG:replaced useless chars:"+s);
+		if (isDebugging) System.out.println("DBG:replaced useless chars:"+s);
 		
 		String items[] = s.split("\\+");
 		itemCount = items.length;
 		
-		if (ISDEBUGGING)
+		if (isDebugging)
 		{
 			System.out.println("DBG:splitted tokens:");
 			for (int i=0;i<itemCount;i++)
@@ -173,7 +158,7 @@ public class Calculator {
 		}
 		
 		//data structure initializing
-		expressionArray 	= new int[itemCount][MAXVARCOUNT];
+		expressionArray 	= new int[itemCount][maxVarCount];
 		coefficientArray	= new double[itemCount];
 		
 		
@@ -181,40 +166,37 @@ public class Calculator {
 		//parse each token into the array
 		for (int i=0;i<itemCount;i++)
 		{
-			if (ISDEBUGGING) System.out.println("DBG:Processing token "+i);
+			if (isDebugging) System.out.println("DBG:Processing token "+i);
 			
 			coefficientArray[i]=1;
 			StringBuffer token = new StringBuffer(items[i]);
 			StringBuffer cache = new StringBuffer();
 			while (token.length() != 0)
 			{
+				//if (isDebugging) System.out.println(" DBG:another sub-token:"+token);
 				cache.setLength(0);
-				if (".0123456789@".indexOf(token.charAt(0)) != -1) 
-					//parse into number
+				if (".0123456789@".indexOf(token.charAt(0)) != -1) //parse into number
 				{
 					while (".0123456789@".indexOf(token.charAt(0)) != -1)
 					{
 						cache.append(token.charAt(0));
 						token.deleteCharAt(0);
-						if (token.length()==0) 
-							break;
+						if (token.length()==0) break;
 					};
-						if (cache.charAt(0) == '@')
+					if (cache.charAt(0) == '@')
 						cache.setCharAt(0, '-');
-						if (ISDEBUGGING) System.out.println(" DBG:sub-token:"+cache );
+					if (isDebugging) System.out.println(" DBG:sub-token:"+cache );
 					coefficientArray[i] *= Double.parseDouble(cache.toString());
 						
 					
-				} else	if("abcdefghijklmnopqrstuvwxyz".indexOf(token.charAt(0)) != -1)
-						//parse into variable
+				} else	if("abcdefghijklmnopqrstuvwxyz".indexOf(token.charAt(0)) != -1)//parse into variable
 				{
-					if (token.length()>1) 
-						//possible power
+					if (token.length()>1) //possible power
 					{
 						if (token.charAt(1)=='^')
 						{
 							int varTemp = charIndex(token.charAt(0));
-							if (ISDEBUGGING) System.out.print(" DBG:sub-token:"+token.substring(0, 2) );
+							if (isDebugging) System.out.print(" DBG:sub-token:"+token.substring(0, 2) );
 							token.deleteCharAt(0);
 							token.deleteCharAt(0);
 							
@@ -225,8 +207,7 @@ public class Calculator {
 								return;
 							}
 							
-							if ("0123456789".indexOf(token.charAt(0)) == -1) 
-								//deal with the case ^ followed by not a number
+							if ("0123456789".indexOf(token.charAt(0)) == -1) //deal with the case ^ followed by not a number
 							{
 								haveExpression=false;
 								System.out.println("Illegal Character after ^symbol, please check");
@@ -237,30 +218,24 @@ public class Calculator {
 							{
 								cache.append(token.charAt(0));
 								token.deleteCharAt(0);
-								if (token.length()==0) 
-									break;
+								if (token.length()==0) break;
 							};
-							if (ISDEBUGGING) 
-								System.out.println(cache );
+							if (isDebugging) System.out.println(cache );
 							expressionArray[i][varTemp]+= Integer.parseInt(cache.toString());
-						} 
-							else
+						} else
 						{
 							expressionArray[i][charIndex(token.charAt(0))]++;
-							if (ISDEBUGGING) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
+							if (isDebugging) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
 							token.deleteCharAt(0);
 						}
 						
-					} 
-					else		
-						//there's only one variable in the expression
+					} else		//there's only one variable in the expression
 					{
 						expressionArray[i][charIndex(token.charAt(0))]++;
-						if (ISDEBUGGING) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
+						if (isDebugging) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
 						token.deleteCharAt(0);
 					}
-				} 
-				else
+				} else
 				{
 					//Illegal character detected, parse failed
 					haveExpression=false;
@@ -305,34 +280,31 @@ public class Calculator {
 			double value;
 		
 			assignments[i]=detVariables[i].split("=");
-			if (assignments[i].length!=2) 
-					parseError=true;
+			if (assignments[i].length!=2) parseError=true;
 			if ((assignments[i][0].length()!=1) ||( !"abcdefghijklmnopqrstuvwxyz".contains(assignments[i][0])))
 			{
-					parseError=true;
-					System.out.println("Illegal Variable for assignment");
-					return;
+				parseError=true;
+				System.out.println("Illegal Variable for assignment");
+				return;
 			};
 			
 			try
 			{
-					value=Double.parseDouble(assignments[i][1]);
-			} 
-			catch (NumberFormatException e)
+				value=Double.parseDouble(assignments[i][1]);
+			} catch (NumberFormatException e)
 			{
-				   	System.out.println("Illegal assignment: Not a number.");
-				   	parseError=true;
-				   	return;
-			};	
+				System.out.println("Illegal assignment: Not a number.");
+				parseError=true;
+				return;
+			};
 			
-			if (parseError) 
-					break;
+			if (parseError) break;
 				
 		}
-			if(parseError)
+		if(parseError)
 		{
-				System.out.println("Illegal Simplification Command.Please check.");
-				return;
+			System.out.println("Illegal Simplification Command.Please check.");
+			return;
 		}
 		
 		for (int i=0;i<detVariables.length-1;i++)
@@ -354,16 +326,22 @@ public class Calculator {
 						tempCoArray[j]*=Math.pow(Double.parseDouble(assignments[i][1]), tempExArray[j][charIndex(assignments[i][0].charAt(0))]);
 						tempExArray[j][charIndex(assignments[i][0].charAt(0))]=0;
 					}
-				if (!existVariable)
-				{
-					System.out.println("Assignment to non exist variable, please check.");
-					return;
-				}
+			if (!existVariable)
+			{
+				System.out.println("Assignment to non exist variable, please check.");
+				return;
+			}
 		};
+				
+			
 		//output the result
+		
 		outputExpression(tempExArray,tempCoArray);
+		
+		
 		return;
 	}
+	
 	public static void derivate(char var)
 	{
 		//copy the expression for simplification
@@ -379,8 +357,7 @@ public class Calculator {
 				{
 					tempCoArray[i]=0;
 					//TODO: may be clean the table here or not
-				} 
-				else //this var exist in this item
+				} else //this var exist in this item
 				{
 					tempCoArray[i]*=tempExArray[i][charIndex(var)];
 					tempExArray[i][charIndex(var)]--;
@@ -417,8 +394,7 @@ public class Calculator {
 			if (inputString == "exit")				//exit the program
 				break;
 			
-			if (inputString.length()==0) 
-				continue;	//continue the loop if the input is empty
+			if (inputString.length()==0) continue;	//continue the loop if the input is empty
 			
 			if (!haveExpression)					//first run, without an expression
 			{
@@ -432,8 +408,7 @@ public class Calculator {
 					continue;
 				}
 				
-			} 
-			else
+			} else
 			{
 				if (inputString.contains("!"))	//possible command
 				{
@@ -442,13 +417,11 @@ public class Calculator {
 					else if (isLegitDerivationCommand(inputString))
 						derivate(inputString.charAt(5));
 					else System.out.println("This command doesn't exist, please check.");
-				} 
-				else if (isLegitExpression(inputString))	//inputed a new expression, update
+				} else if (isLegitExpression(inputString))	//inputed a new expression, update
 				{
 					haveExpression = true;
 					initialize(inputString);
-				} 
-				else
+				} else
 				{
 					System.out.println("This is not a good expression or command, please retry.");
 					continue;
@@ -466,4 +439,3 @@ public class Calculator {
 	
 	
 }
-
