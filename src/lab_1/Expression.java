@@ -2,10 +2,9 @@ package lab_1;
 
 public class Expression {
 	
-	final static int	maxItemCount	=	1000;
-	final static int	maxVarCount		=	30;
-	final static double	minDouble		=	0.0000001;
-	final static Boolean isDebugging	=	false;
+	private final static int	maxItemCount	=	1000;
+	private final static int	maxVarCount		=	30;
+	private final static double	minDouble		=	0.0000001;
 	
 	private Boolean haveExpression	=	false;
 	private int itemCount = 0;
@@ -30,7 +29,7 @@ public class Expression {
 			return false;
 	}
 	
-	public String parseResult(int[][] exp, double[] co)
+	private String parseResult(int[][] exp, double[] co)
 	{
 		//combine same items, if possible
 		String result = "";
@@ -92,67 +91,7 @@ public class Expression {
 				return result;
 	}	
 	
-	private String parseResult()
-	{
-		//combine same items, if possible
-		String result = "";
-			for (int i=0;i<itemCount-1;i++)
-				{
-					if (isZero(coefficientArray[i]))			//skip the empty term
-						continue;
-					for  (int j=i+1;j<itemCount;j++)
-					{
-						Boolean sameFlag=true;
-						for (int k=0;k<maxVarCount;k++)			//check if they are similar items
-							if (expressionArray[i][k]!=expressionArray[j][k])
-							{
-								sameFlag=false;
-								break;
-							};
-						if (sameFlag)							//combine the items and clean the latter one
-						{
-							coefficientArray[i]+=coefficientArray[j];
-							coefficientArray[j]=0;
-							for (int k=0;k<maxVarCount;k++)
-								expressionArray[j][k]=0;
-						}
-					}
-				};
-				
-				
-				//do something, output the expression to see the result
-				
-				Boolean isFirstFlag=true;
-				for (int i=0;i<itemCount;i++)
-					if (!isZero(coefficientArray[i]))
-					{
-						if(!isFirstFlag)
-						{
-							if (coefficientArray[i]>0){
-								result+="+";
-							}
-						} else isFirstFlag=false;
-						//if (coefficientArray[i]<0)
-						//	System.out.print("-");
-						result+=coefficientArray[i];
-						
-						
-						for (int j=0;j<maxVarCount;j++)
-							if (expressionArray[i][j]!=0)
-							{
-								if (expressionArray[i][j] == 1)	
-								{
-									result+=indexChar(j);
-								} else 
-								{
-									result+=indexChar(j);
-									result+="^";
-									result+=expressionArray[i][j];
-								}
-							}
-					}
-				return result;
-	}		
+
 
 	public String initialize(String s)
 	{
@@ -161,19 +100,9 @@ public class Expression {
 		s = s.replace("*","");			//remove all *
 		if (s.charAt(0)=='+')
 			s=s.substring(1);
-		
-		if (isDebugging) System.out.println("DBG:replaced useless chars:"+s);
-		
 		String items[] = s.split("\\+");
 		itemCount = items.length;
-		
-		if (isDebugging)
-		{
-			System.out.println("DBG:splitted tokens:");
-			for (int i=0;i<itemCount;i++)
-				System.out.println(items[i]+"#");
-		}
-		
+
 		//data structure initializing
 		expressionArray 	= new int[itemCount][maxVarCount];
 		coefficientArray	= new double[itemCount];
@@ -183,8 +112,6 @@ public class Expression {
 		//parse each token into the array
 		for (int i=0;i<itemCount;i++)
 		{
-			if (isDebugging) System.out.println("DBG:Processing token "+i);
-			
 			coefficientArray[i]=1;
 			StringBuffer token = new StringBuffer(items[i]);
 			StringBuffer cache = new StringBuffer();
@@ -202,7 +129,6 @@ public class Expression {
 					};
 					if (cache.charAt(0) == '@')
 						cache.setCharAt(0, '-');
-					if (isDebugging) System.out.println(" DBG:sub-token:"+cache );
 					coefficientArray[i] *= Double.parseDouble(cache.toString());
 						
 					
@@ -213,7 +139,6 @@ public class Expression {
 						if (token.charAt(1)=='^')
 						{
 							int varTemp = charIndex(token.charAt(0));
-							if (isDebugging) System.out.print(" DBG:sub-token:"+token.substring(0, 2) );
 							token.deleteCharAt(0);
 							token.deleteCharAt(0);
 							
@@ -235,19 +160,16 @@ public class Expression {
 								token.deleteCharAt(0);
 								if (token.length()==0) break;
 							};
-							if (isDebugging) System.out.println(cache );
 							expressionArray[i][varTemp]+= Integer.parseInt(cache.toString());
 						} else
 						{
 							expressionArray[i][charIndex(token.charAt(0))]++;
-							if (isDebugging) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
 							token.deleteCharAt(0);
 						}
 						
 					} else		//there's only one variable in the expression
 					{
 						expressionArray[i][charIndex(token.charAt(0))]++;
-						if (isDebugging) System.out.println(" DBG:sub-token:"+ token.charAt(0) );
 						token.deleteCharAt(0);
 					}
 				} else
@@ -261,7 +183,7 @@ public class Expression {
 		}
 		//combine same items, if possible
 		haveExpression = true;
-		return parseResult();
+		return parseResult(expressionArray,coefficientArray);
 	}
 
 	public String simplify(String s)
@@ -280,7 +202,7 @@ public class Expression {
 		//deals with empty commands here:
 		if (s.length()==0)
 		{
-			return parseResult();
+			return parseResult(expressionArray,coefficientArray);
 		}
 		
 		String[]	detVariables	= s.split(" "); 
