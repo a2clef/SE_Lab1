@@ -14,10 +14,9 @@ public class SimplifyTest_E4 {
 
 	@Test
 	public void testSimplify() {
-		Calculator calcInst = new Calculator();
-		Calculator.initialize("-2*x*yz+3x^2y-4x5yz^3+123");
-		
-		String result = Calculator.simplify("!simplify x=1 x=3");
+		Expression expr = new Expression();
+		ExprInitialization.init(expr,"-2*x*yz+3x^2y-4x5yz^3+123");
+		String result = ExprSimplify.simplify(expr, "!simplify x=1 x=3");
 		assertEquals(result,"duplicated assignment");
 		//fail("Not yet implemented");
 	}

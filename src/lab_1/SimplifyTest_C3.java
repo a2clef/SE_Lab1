@@ -14,11 +14,14 @@ public class SimplifyTest_C3 {
 
 	@Test
 	public void testSimplify() {
-		Calculator calcInst = new Calculator();
-		Calculator.initialize("-2*x*yz+3x^2y-4x5yz^3+123");
 		
-		String result = Calculator.simplify("!simplify x=1 y=2 z=3");
-		assertEquals(result,"-963.0");
+		Expression expr = new Expression();
+		ExprInitialization.init(expr,"-2*x*yz+3x^2y-4x5yz^3+123");
+		
+		String result = ExprSimplify.simplify(expr, "!simplify x=1 y=2 z=3");
+		
+		assertEquals(result,"-963.0");	
+
 		//fail("Not yet implemented");
 	}
 

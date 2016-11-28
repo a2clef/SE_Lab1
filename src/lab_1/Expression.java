@@ -1,36 +1,28 @@
 package lab_1;
 
-import java.util.Scanner;
-
-public class Calculator {
-	//subclasses and structures
-
+public class Expression {
 	
-	//Constants & Control panel
 	final static int	maxItemCount	=	1000;
 	final static int	maxVarCount		=	30;
 	final static double	minDouble		=	0.0000001;
 	final static Boolean isDebugging	=	false;
 	
-	static Boolean haveExpression	=	false;
-	static int itemCount = 0;
-	static int expressionArray[][];
-	static double coefficientArray[]; 
+	private Boolean haveExpression	=	false;
+	private int itemCount = 0;
+	private int expressionArray[][];
+	private double coefficientArray[]; 
 	
-	
-	
-	//Utility Functions
-	public static int charIndex(char c)
+	private static int charIndex(char c)
 	{
 		return (int)(c - 'a');
 	}
 	
-	public static char indexChar(int i)
+	private static char indexChar(int i)
 	{
 		return (char)('a'+i);
 	}
 	
-	public static Boolean isZero(double d)
+	private static Boolean isZero(double d)
 	{
 		if (Math.abs(d)<minDouble)
 			return true;
@@ -38,66 +30,7 @@ public class Calculator {
 			return false;
 	}
 	
-	public static void outputExpression(int[][] exp, double[] co)
-	{
-		//combine same items, if possible
-			for (int i=0;i<itemCount-1;i++)
-				{
-					if (isZero(co[i]))			//skip the empty term
-						continue;
-					for  (int j=i+1;j<itemCount;j++)
-					{
-						Boolean sameFlag=true;
-						for (int k=0;k<maxVarCount;k++)			//check if they are similar items
-							if (exp[i][k]!=exp[j][k])
-							{
-								sameFlag=false;
-								break;
-							};
-						if (sameFlag)							//combine the items and clean the latter one
-						{
-							co[i]+=co[j];
-							co[j]=0;
-							for (int k=0;k<maxVarCount;k++)
-								exp[j][k]=0;
-						}
-					}
-				};
-				
-				
-				//do something, output the expression to see the result
-				
-				Boolean isFirstFlag=true;
-				for (int i=0;i<itemCount;i++)
-					if (!isZero(co[i]))
-					{
-						if(!isFirstFlag)
-						{
-							if (co[i]>0)
-								System.out.print("+");
-						} else isFirstFlag=false;
-						//if (coefficientArray[i]<0)
-						//	System.out.print("-");
-						System.out.print(co[i]);
-						
-						for (int j=0;j<maxVarCount;j++)
-							if (exp[i][j]!=0)
-							{
-								if (exp[i][j] == 1)	
-								{
-									System.out.print(indexChar(j));
-								} else 
-								{
-									System.out.print(indexChar(j));
-									System.out.print("^");
-									System.out.print(exp[i][j]);
-								}
-							}
-					}
-				System.out.println();	
-	}
-	
-	public static String parseResult(int[][] exp, double[] co)
+	public String parseResult(int[][] exp, double[] co)
 	{
 		//combine same items, if possible
 		String result = "";
@@ -158,48 +91,70 @@ public class Calculator {
 					}
 				return result;
 	}	
+	
+	private String parseResult()
+	{
+		//combine same items, if possible
+		String result = "";
+			for (int i=0;i<itemCount-1;i++)
+				{
+					if (isZero(coefficientArray[i]))			//skip the empty term
+						continue;
+					for  (int j=i+1;j<itemCount;j++)
+					{
+						Boolean sameFlag=true;
+						for (int k=0;k<maxVarCount;k++)			//check if they are similar items
+							if (expressionArray[i][k]!=expressionArray[j][k])
+							{
+								sameFlag=false;
+								break;
+							};
+						if (sameFlag)							//combine the items and clean the latter one
+						{
+							coefficientArray[i]+=coefficientArray[j];
+							coefficientArray[j]=0;
+							for (int k=0;k<maxVarCount;k++)
+								expressionArray[j][k]=0;
+						}
+					}
+				};
+				
+				
+				//do something, output the expression to see the result
+				
+				Boolean isFirstFlag=true;
+				for (int i=0;i<itemCount;i++)
+					if (!isZero(coefficientArray[i]))
+					{
+						if(!isFirstFlag)
+						{
+							if (coefficientArray[i]>0){
+								result+="+";
+							}
+						} else isFirstFlag=false;
+						//if (coefficientArray[i]<0)
+						//	System.out.print("-");
+						result+=coefficientArray[i];
+						
+						
+						for (int j=0;j<maxVarCount;j++)
+							if (expressionArray[i][j]!=0)
+							{
+								if (expressionArray[i][j] == 1)	
+								{
+									result+=indexChar(j);
+								} else 
+								{
+									result+=indexChar(j);
+									result+="^";
+									result+=expressionArray[i][j];
+								}
+							}
+					}
+				return result;
+	}		
 
-	//Syntax Check
-	public static Boolean isLegitExpression(String s)
-	{
-		Boolean illegalExpression=false;
-		//add rules for illegal expression
-		for (int i=0;i<s.length();i++)		//if contains illegal character
-			if ("0123456789-+*^. abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(i)) == -1) 
-			{
-				illegalExpression=true;
-				break;
-			};
-		
-		
-		
-		if (illegalExpression) return false;
-		if (isDebugging) System.out.println("DBG:possible expression");
-		return true;
-	}
-	
-	public static Boolean isLegitSimplifyCommand(String s)
-	{
-		for (int i=0;i<s.length();i++)		//if contains illegal character
-			if ("!0123456789-=. abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(i)) == -1) 
-				return false;
-		if (!s.startsWith("!simplify")) return false;
-		
-		if (isDebugging) System.out.println("DBG:possible simplify command");
-		return true;
-	}
-	
-	public static Boolean isLegitDerivationCommand(String s)
-	{
-		if (s.length()!=6) return false;
-		if (!s.startsWith("!d/d ")) return false;
-		if ("abcdefghijklmnopqrstuvwxyz".indexOf(s.charAt(5))==-1) return false;
-		if (isDebugging) System.out.println("DBG:possible derivation command");
-		return true;
-	}
-	
-	//Initialization
-	public static void initialize(String s)
+	public String initialize(String s)
 	{
 		s = s.replace(" ", "");			//delete all spaces
 		s = s.replace("-","+@");		//use @ to represent minus
@@ -265,15 +220,13 @@ public class Calculator {
 							if (token.length()==0)
 							{
 								haveExpression=false;
-								System.out.println("Empty after ^symbol, please check");
-								return;
+								return "Empty after ^symbol, please check";
 							}
 							
 							if ("0123456789".indexOf(token.charAt(0)) == -1) //deal with the case ^ followed by not a number
 							{
 								haveExpression=false;
-								System.out.println("Illegal Character after ^symbol, please check");
-								return;
+								return "Illegal Character after ^symbol, please check";
 							};
 							
 							while ("0123456789".indexOf(token.charAt(0)) != -1)
@@ -301,19 +254,17 @@ public class Calculator {
 				{
 					//Illegal character detected, parse failed
 					haveExpression=false;
-					System.out.println("Illegal Character Detected, please retry");
-					return;
+					return "Illegal Character Detected, please retry";
 				};
 				
 			}
 		}
 		//combine same items, if possible
-		
-		outputExpression(expressionArray,coefficientArray);
-		
+		haveExpression = true;
+		return parseResult();
 	}
-	//commands
-	public static String simplify(String s)
+
+	public String simplify(String s)
 	{
 		//copy the expression for simplification
 		int[][]		tempExArray = new int[expressionArray.length][];
@@ -329,8 +280,7 @@ public class Calculator {
 		//deals with empty commands here:
 		if (s.length()==0)
 		{
-			outputExpression(tempExArray,tempCoArray);
-			return parseResult(tempExArray,tempCoArray);
+			return parseResult();
 		}
 		
 		String[]	detVariables	= s.split(" "); 
@@ -396,15 +346,10 @@ public class Calculator {
 		};
 				
 			
-		//output the result
-		
-		outputExpression(tempExArray,tempCoArray);
-		//System.out.println(parseResult(tempExArray,tempCoArray));
-		
 		return parseResult(tempExArray,tempCoArray);
 	}
-	
-	public static String derivate(char var)
+
+	public String derivate(char var)
 	{
 		//copy the expression for simplification
 		int[][]		tempExArray = new int[expressionArray.length][];
@@ -431,70 +376,13 @@ public class Calculator {
 			return "variable does not exist";
 		}
 		//output the expression processed
-		outputExpression(tempExArray,tempCoArray);
+		//outputExpression(tempExArray,tempCoArray);
 		return parseResult(tempExArray,tempCoArray);
 	}
 	
-	
-	public static void main(String args[])
-	{
-		Expression expr = new Expression();
-		String	inputString;
-		
-		System.out.println("Expression Calculator.");
-		System.out.println("Please input an legitimate expression first.");
-		
-		
-		Scanner inputSource	=	new Scanner(System.in);
-		
-		while(true)
-		{
-			System.out.print(">>");
-			inputString = inputSource.nextLine();
-			
-			if (inputString == "exit")				//exit the program
-				break;
-			
-			if (inputString.length()==0) continue;	//continue the loop if the input is empty
-			
-			if (!expr.haveExpression())					//first run, without an expression
-			{
-				System.out.println(ExprInitialization.init(expr,inputString));
-//				if (isLegitExpression(inputString))
-//				{	
-//					haveExpression = true;
-//					initialize(inputString);
-//				} else
-//				{
-//					System.out.println("This is not a good expression, please retry.");
-//					continue;
-//				}
-				
-			} else
-			{
-				if (inputString.contains("!"))	//possible command
-				{
-					if (isLegitSimplifyCommand(inputString))
-						System.out.println(ExprSimplify.simplify(expr, inputString));
-						//simplify(inputString);
-					else if (isLegitDerivationCommand(inputString))
-						System.out.println(ExprDerivate.derivate(expr, inputString));
-						//derivate(inputString.charAt(5));
-					else System.out.println("This command doesn't exist, please check.");
-				} else
-				{
-					System.out.println(ExprInitialization.init(expr,inputString));
-				}
-					
-			};
-		}
-		
-		
-		
-		//post run process
-		inputSource.close();
+	public boolean haveExpression(){
+		return haveExpression;
 	}
-	
 	
 	
 }

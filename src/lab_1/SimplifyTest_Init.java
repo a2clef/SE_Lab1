@@ -14,10 +14,9 @@ public class SimplifyTest_Init {
 
 	@Test
 	public void testSimplify() {
-		Calculator calcInst = new Calculator();
-		Calculator.initialize("-2*x*yz+3x^2y-4x5yz^3+123");
-		
-		String result = Calculator.simplify("!simplify");
+		Expression expr = new Expression();
+		ExprInitialization.init(expr,"-2*x*yz+3x^2y-4x5yz^3+123");
+		String result = ExprSimplify.simplify(expr, "!simplify");
 		assertEquals(result,"-2.0xyz+3.0x^2y-20.0xyz^3+123.0");
 		//fail("Not yet implemented");
 	}

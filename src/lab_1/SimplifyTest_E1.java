@@ -14,12 +14,11 @@ public class SimplifyTest_E1 {
 
 	@Test
 	public void testSimplify() {
-		Calculator calcInst = new Calculator();
-		Calculator.initialize("-2*x*yz+3x^2y-4x5yz^3+123");
 		
-		String result = Calculator.simplify("!simplify 1=2");
-		assertEquals(result,"illegal variable");
-		//fail("Not yet implemented");
+		Expression expr = new Expression();
+		ExprInitialization.init(expr,"-2*x*yz+3x^2y-4x5yz^3+123");
+		String result = ExprSimplify.simplify(expr, "!simplify 1=2");
+		assertEquals(result,"illegal variable");	
 	}
 
 }
